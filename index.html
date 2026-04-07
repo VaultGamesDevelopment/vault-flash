@@ -1,259 +1,297 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>The Vault</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="tab-title">The Vault | Flash Archive</title>
 
-<!-- Ruffle (UNPKG CDN) -->
+<!-- Ruffle CDN -->
 <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg: #0b0f1a;
-  --panel: rgba(255,255,255,0.05);
-  --accent: #4da3ff;
-  --text: #ffffff;
+    --bg-color: #050505;
+    --text-color: #ffffff;
+    --accent-color: #3b82f6;
+    --card-bg: #0f0f0f;
+    --border-color: #262626;
+    --nav-bg: rgba(5, 5, 5, 0.8);
+    --secondary-text: #a3a3a3;
+    --glass: rgba(255,255,255,0.03);
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top, #111a2e, #05070d);
-  color: var(--text);
-  display: flex;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
 }
 
-/* Sidebar */
-.sidebar {
-  width: 220px;
-  height: 100vh;
-  background: var(--panel);
-  backdrop-filter: blur(20px);
-  padding: 20px;
-  box-sizing: border-box;
-  border-right: 1px solid rgba(255,255,255,0.1);
+/* HEADER */
+header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    padding: 15px 5%;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
 }
 
-.sidebar h1 {
-  font-size: 20px;
-  margin-bottom: 20px;
+.logo {
+    font-weight: 800;
+    cursor: pointer;
+    margin-right: 20px;
 }
 
-.sidebar button {
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.08);
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
+nav {
+    display: flex;
+    gap: 15px;
 }
 
-.sidebar button:hover {
-  background: var(--accent);
+nav a {
+    cursor: pointer;
+    color: var(--secondary-text);
 }
 
-/* Main */
-.main {
-  flex: 1;
-  padding: 20px;
+nav a.active {
+    color: var(--text-color);
 }
 
-/* Top bar */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+.search-container {
+    margin-left: auto;
 }
 
-.search {
-  width: 300px;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  background: rgba(255,255,255,0.08);
-  color: white;
+#game-search {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--glass);
+    color: white;
 }
 
-/* Game grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 15px;
+/* VIEWS */
+.view-section {
+    display: none;
+    padding: 30px 5%;
 }
 
-.card {
-  background: var(--panel);
-  border-radius: 12px;
-  padding: 15px;
-  cursor: pointer;
-  transition: 0.2s;
-  backdrop-filter: blur(15px);
+.view-section.active {
+    display: block;
 }
 
-.card:hover {
-  transform: scale(1.05);
-  background: rgba(77,163,255,0.2);
+/* GRID */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
 }
 
-.card h3 {
-  margin: 0;
-  font-size: 16px;
+.game-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: 0.2s;
 }
 
-/* Player modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.8);
-  display: none;
-  align-items: center;
-  justify-content: center;
+.game-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-4px);
 }
 
-.modal-content {
-  width: 900px;
-  height: 600px;
-  background: black;
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
+.game-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
 }
 
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: red;
-  border: none;
-  color: white;
-  padding: 8px 10px;
-  cursor: pointer;
-  border-radius: 6px;
+.game-info {
+    padding: 10px;
+    text-align: center;
 }
 
-.fullscreen-btn {
-  position: absolute;
-  top: 10px;
-  right: 60px;
-  background: var(--accent);
-  border: none;
-  color: white;
-  padding: 8px 10px;
-  cursor: pointer;
-  border-radius: 6px;
+/* GAME VIEW */
+#game-view {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 2000;
+}
+
+#game-container {
+    width: 100%;
+    height: 100%;
+}
+
+.exit-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2100;
+    padding: 10px;
+    background: var(--accent-color);
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+/* SETTINGS */
+#settings-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 16px;
+    z-index: 3000;
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 2999;
+}
+
+button {
+    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="sidebar">
-  <h1>🔐 The Vault</h1>
-  <button onclick="filterGames('all')">All Games</button>
-  <button onclick="filterGames('action')">Action</button>
-  <button onclick="filterGames('arcade')">Arcade</button>
+<header>
+    <div class="logo" onclick="showView('home')">THE VAULT</div>
+
+    <nav>
+        <a id="nav-home" class="active" onclick="showView('home')">Flash</a>
+        <a id="nav-archive" onclick="showView('archive')">Archive</a>
+    </nav>
+
+    <div class="search-container">
+        <input id="game-search" placeholder="Search..." onkeyup="filterGames()">
+    </div>
+
+    <button onclick="toggleSettings(true)">Settings</button>
+</header>
+
+<!-- FLASH GAMES -->
+<section id="view-home" class="view-section active">
+    <div class="grid-container" id="flash-grid"></div>
+</section>
+
+<!-- ARCHIVE (placeholder) -->
+<section id="view-archive" class="view-section">
+    <p>Archive section (you can expand this later)</p>
+</section>
+
+<!-- GAME VIEW -->
+<div id="game-view">
+    <button class="exit-btn" onclick="closeGame()">Exit</button>
+    <div id="game-container"></div>
 </div>
 
-<div class="main">
+<!-- SETTINGS -->
+<div class="modal-overlay" id="overlay" onclick="toggleSettings(false)"></div>
 
-  <div class="topbar">
-    <input id="search" class="search" placeholder="Search games..." oninput="renderGames()"/>
-  </div>
-
-  <div id="grid" class="grid"></div>
-
-</div>
-
-<!-- Modal -->
-<div id="modal" class="modal">
-  <div class="modal-content" id="playerContainer">
-    <button class="close-btn" onclick="closeGame()">X</button>
-    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
-  </div>
+<div id="settings-modal">
+    <h2>Settings</h2>
+    <button onclick="setTheme('dark')">Dark</button>
+    <button onclick="setTheme('midnight')">Midnight</button>
+    <br><br>
+    <button onclick="toggleSettings(false)">Close</button>
 </div>
 
 <script>
+/* GAME DATA */
 const games = [
-  { name: "Game 1", file: "games/game1.swf", category: "arcade" },
-  { name: "Game 2", file: "games/game2.swf", category: "action" },
-  { name: "Game 3", file: "games/game3.swf", category: "arcade" }
+    { name: "Game 1", file: "games/game1.swf", image: "https://via.placeholder.com/300" },
+    { name: "Game 2", file: "games/game2.swf", image: "https://via.placeholder.com/300" }
 ];
 
-let currentFilter = "all";
+/* NAV */
+function showView(v) {
+    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('view-' + v).classList.add('active');
 
-/* Render games */
-function renderGames() {
-  const grid = document.getElementById("grid");
-  const search = document.getElementById("search").value.toLowerCase();
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById('nav-' + v).classList.add('active');
+}
 
-  grid.innerHTML = "";
+/* LOAD GAMES */
+function loadGames() {
+    const grid = document.getElementById('flash-grid');
 
-  games
-    .filter(g => currentFilter === "all" || g.category === currentFilter)
-    .filter(g => g.name.toLowerCase().includes(search))
-    .forEach(game => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `<h3>${game.name}</h3>`;
-      card.onclick = () => openGame(game.file);
-      grid.appendChild(card);
+    games.forEach(g => {
+        const card = document.createElement('div');
+        card.className = "game-card";
+        card.setAttribute("data-title", g.name.toLowerCase());
+
+        card.innerHTML = `
+            <img src="${g.image}">
+            <div class="game-info"><h3>${g.name}</h3></div>
+        `;
+
+        card.onclick = () => launchGame(g.file);
+        grid.appendChild(card);
     });
 }
 
-function filterGames(category) {
-  currentFilter = category;
-  renderGames();
+/* LAUNCH RUFFLE GAME */
+function launchGame(file) {
+    const container = document.getElementById('game-container');
+    container.innerHTML = "";
+
+    const ruffle = window.RufflePlayer.newest();
+    const player = ruffle.createPlayer();
+
+    player.style.width = "100%";
+    player.style.height = "100%";
+
+    container.appendChild(player);
+    player.load(file);
+
+    document.getElementById('game-view').style.display = 'block';
 }
 
-/* Open game */
-function openGame(file) {
-  const modal = document.getElementById("modal");
-  const container = document.getElementById("playerContainer");
-
-  container.innerHTML = `
-    <button class="close-btn" onclick="closeGame()">X</button>
-    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
-  `;
-
-  const ruffle = window.RufflePlayer.newest();
-  const player = ruffle.createPlayer();
-
-  player.style.width = "100%";
-  player.style.height = "100%";
-
-  container.appendChild(player);
-
-  player.load(file);
-
-  modal.style.display = "flex";
-}
-
-/* Close */
 function closeGame() {
-  document.getElementById("modal").style.display = "none";
+    document.getElementById('game-view').style.display = 'none';
+    document.getElementById('game-container').innerHTML = "";
 }
 
-/* Fullscreen */
-function toggleFullscreen() {
-  const el = document.getElementById("playerContainer");
-
-  if (!document.fullscreenElement) {
-    el.requestFullscreen();
-  } else {
-    document.exitFullscreen();
-  }
+/* SEARCH */
+function filterGames() {
+    const q = document.getElementById('game-search').value.toLowerCase();
+    document.querySelectorAll('.game-card').forEach(c => {
+        c.style.display = c.getAttribute('data-title').includes(q) ? "block" : "none";
+    });
 }
 
-/* Init */
-renderGames();
+/* SETTINGS */
+function toggleSettings(show) {
+    document.getElementById('settings-modal').style.display = show ? 'block' : 'none';
+    document.getElementById('overlay').style.display = show ? 'block' : 'none';
+}
+
+function setTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+}
+
+/* INIT */
+window.onload = () => {
+    loadGames();
+};
 </script>
 
 </body>
