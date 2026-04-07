@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="tab-title">The Vault | Flash Archive</title>
 
-<!-- Ruffle CDN -->
+<!-- Ruffle (Flash Emulator) -->
 <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -29,7 +29,6 @@ body {
     color: var(--text-color);
 }
 
-/* HEADER */
 header {
     position: sticky;
     top: 0;
@@ -73,7 +72,6 @@ nav a.active {
     color: white;
 }
 
-/* VIEWS */
 .view-section {
     display: none;
     padding: 30px 5%;
@@ -83,7 +81,6 @@ nav a.active {
     display: block;
 }
 
-/* GRID */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -115,7 +112,6 @@ nav a.active {
     text-align: center;
 }
 
-/* GAME VIEW */
 #game-view {
     display: none;
     position: fixed;
@@ -186,14 +182,14 @@ button {
     <button onclick="toggleSettings(true)">Settings</button>
 </header>
 
-<!-- FLASH GAMES -->
+<!-- FLASH -->
 <section id="view-home" class="view-section active">
     <div class="grid-container" id="flash-grid"></div>
 </section>
 
-<!-- ARCHIVE (placeholder) -->
+<!-- ARCHIVE -->
 <section id="view-archive" class="view-section">
-    <p>Archive section (you can expand this later)</p>
+    <p style="padding:20px;">Archive section (expand later)</p>
 </section>
 
 <!-- GAME VIEW -->
@@ -214,13 +210,14 @@ button {
 </div>
 
 <script>
-/* GAME DATA */
 const games = [
-    { name: "Game 1", file: "games/game1.swf", image: "https://via.placeholder.com/300" },
-    { name: "Game 2", file: "games/game2.swf", image: "https://via.placeholder.com/300" }
+    {
+        name: "Flash Game",
+        file: "./flash/game.swf",
+        image: "https://via.placeholder.com/300"
+    }
 ];
 
-/* NAV */
 function showView(v) {
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
     document.getElementById('view-' + v).classList.add('active');
@@ -229,7 +226,6 @@ function showView(v) {
     document.getElementById('nav-' + v).classList.add('active');
 }
 
-/* LOAD GAMES */
 function loadGames() {
     const grid = document.getElementById('flash-grid');
 
@@ -248,7 +244,6 @@ function loadGames() {
     });
 }
 
-/* LAUNCH RUFFLE GAME */
 function launchGame(file) {
     const container = document.getElementById('game-container');
     container.innerHTML = "";
@@ -267,10 +262,9 @@ function launchGame(file) {
 
 function closeGame() {
     document.getElementById('game-view').style.display = 'none';
-    document.getElementById('game-container').innerHTML = "";
+    document.getElementById('game-container').innerHTML = '';
 }
 
-/* SEARCH */
 function filterGames() {
     const q = document.getElementById('game-search').value.toLowerCase();
     document.querySelectorAll('.game-card').forEach(c => {
@@ -278,7 +272,6 @@ function filterGames() {
     });
 }
 
-/* SETTINGS */
 function toggleSettings(show) {
     document.getElementById('settings-modal').style.display = show ? 'block' : 'none';
     document.getElementById('overlay').style.display = show ? 'block' : 'none';
@@ -288,7 +281,6 @@ function setTheme(t) {
     document.documentElement.setAttribute("data-theme", t);
 }
 
-/* INIT */
 window.onload = () => {
     loadGames();
 };
