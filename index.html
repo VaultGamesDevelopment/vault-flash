@@ -1,148 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Unblocked Flash Games</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Vault</title>
 
-  <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+<!-- Ruffle (UNPKG CDN) -->
+<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+<style>
+:root {
+  --bg: #0b0f1a;
+  --panel: rgba(255,255,255,0.05);
+  --accent: #4da3ff;
+  --text: #ffffff;
+}
 
-    header {
-      width: 100%;
-      padding: 16px;
-      text-align: center;
-      background: #1a1a1a;
-      border-bottom: 1px solid #333;
-      font-size: 22px;
-      font-weight: bold;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #111a2e, #05070d);
+  color: var(--text);
+  display: flex;
+}
 
-    .controls {
-      margin: 20px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  box-sizing: border-box;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
 
-    select, button {
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      font-size: 14px;
-    }
+.sidebar h1 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
 
-    select {
-      background: #222;
-      color: #fff;
-    }
+.sidebar button {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
 
-    button {
-      background: #4a90e2;
-      color: white;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+.sidebar button:hover {
+  background: var(--accent);
+}
 
-    button:hover {
-      background: #357bd8;
-    }
+/* Main */
+.main {
+  flex: 1;
+  padding: 20px;
+}
 
-    .game-container {
-      width: 900px;
-      max-width: 95%;
-      height: 600px;
-      background: black;
-      border: 2px solid #333;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+/* Top bar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
 
-    .footer {
-      margin-top: 15px;
-      font-size: 12px;
-      color: #888;
-    }
-  </style>
+.search {
+  width: 300px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+
+/* Game grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+  backdrop-filter: blur(15px);
+}
+
+.card:hover {
+  transform: scale(1.05);
+  background: rgba(77,163,255,0.2);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Player modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  width: 900px;
+  height: 600px;
+  background: black;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: red;
+  border: none;
+  color: white;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  right: 60px;
+  background: var(--accent);
+  border: none;
+  color: white;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  🎮 Unblocked Flash Games
-</header>
-
-<div class="controls">
-  <select id="gameSelect">
-    <option value="games/game1.swf">Game 1</option>
-    <option value="games/game2.swf">Game 2</option>
-    <option value="games/game3.swf">Game 3</option>
-  </select>
-
-  <button onclick="loadGame()">Play</button>
-  <button onclick="toggleFullscreen()">Fullscreen</button>
+<div class="sidebar">
+  <h1>🔐 The Vault</h1>
+  <button onclick="filterGames('all')">All Games</button>
+  <button onclick="filterGames('action')">Action</button>
+  <button onclick="filterGames('arcade')">Arcade</button>
 </div>
 
-<div class="game-container" id="playerContainer">
-  <p>Select a game and click Play</p>
+<div class="main">
+
+  <div class="topbar">
+    <input id="search" class="search" placeholder="Search games..." oninput="renderGames()"/>
+  </div>
+
+  <div id="grid" class="grid"></div>
+
 </div>
 
-<div class="footer">
-  Powered by Ruffle Flash Emulator
+<!-- Modal -->
+<div id="modal" class="modal">
+  <div class="modal-content" id="playerContainer">
+    <button class="close-btn" onclick="closeGame()">X</button>
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+  </div>
 </div>
 
 <script>
-  let playerInstance = null;
+const games = [
+  { name: "Game 1", file: "games/game1.swf", category: "arcade" },
+  { name: "Game 2", file: "games/game2.swf", category: "action" },
+  { name: "Game 3", file: "games/game3.swf", category: "arcade" }
+];
 
-  function loadGame() {
-    const container = document.getElementById("playerContainer");
-    container.innerHTML = "";
+let currentFilter = "all";
 
-    if (!window.RufflePlayer) {
-      alert("Ruffle failed to load. Check ruffle.js path.");
-      return;
-    }
+/* Render games */
+function renderGames() {
+  const grid = document.getElementById("grid");
+  const search = document.getElementById("search").value.toLowerCase();
 
-    const ruffle = window.RufflePlayer.newest();
-    const player = ruffle.createPlayer();
+  grid.innerHTML = "";
 
-    player.style.width = "100%";
-    player.style.height = "100%";
+  games
+    .filter(g => currentFilter === "all" || g.category === currentFilter)
+    .filter(g => g.name.toLowerCase().includes(search))
+    .forEach(game => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<h3>${game.name}</h3>`;
+      card.onclick = () => openGame(game.file);
+      grid.appendChild(card);
+    });
+}
 
-    container.appendChild(player);
+function filterGames(category) {
+  currentFilter = category;
+  renderGames();
+}
 
-    const gameUrl = document.getElementById("gameSelect").value;
+/* Open game */
+function openGame(file) {
+  const modal = document.getElementById("modal");
+  const container = document.getElementById("playerContainer");
 
-    player.load(gameUrl);
+  container.innerHTML = `
+    <button class="close-btn" onclick="closeGame()">X</button>
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+  `;
 
-    playerInstance = player;
+  const ruffle = window.RufflePlayer.newest();
+  const player = ruffle.createPlayer();
+
+  player.style.width = "100%";
+  player.style.height = "100%";
+
+  container.appendChild(player);
+
+  player.load(file);
+
+  modal.style.display = "flex";
+}
+
+/* Close */
+function closeGame() {
+  document.getElementById("modal").style.display = "none";
+}
+
+/* Fullscreen */
+function toggleFullscreen() {
+  const el = document.getElementById("playerContainer");
+
+  if (!document.fullscreenElement) {
+    el.requestFullscreen();
+  } else {
+    document.exitFullscreen();
   }
+}
 
-  function toggleFullscreen() {
-    const container = document.getElementById("playerContainer");
-
-    if (!document.fullscreenElement) {
-      container.requestFullscreen().catch(err => {
-        console.error(err);
-      });
-    } else {
-      document.exitFullscreen();
-    }
-  }
+/* Init */
+renderGames();
 </script>
 
 </body>
