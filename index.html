@@ -21,12 +21,12 @@
 
     header {
       width: 100%;
-      padding: 15px;
+      padding: 16px;
       text-align: center;
       background: #1a1a1a;
-      font-size: 20px;
-      font-weight: bold;
       border-bottom: 1px solid #333;
+      font-size: 22px;
+      font-weight: bold;
     }
 
     .controls {
@@ -61,16 +61,16 @@
     }
 
     .game-container {
-      width: 800px;
+      width: 900px;
       max-width: 95%;
       height: 600px;
       background: black;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border: 2px solid #333;
       border-radius: 10px;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .footer {
@@ -99,19 +99,24 @@
 </div>
 
 <div class="game-container" id="playerContainer">
-  <p>Select a game and press Play</p>
+  <p>Select a game and click Play</p>
 </div>
 
 <div class="footer">
-  Powered by Ruffle • Flash emulation in browser
+  Powered by Ruffle Flash Emulator
 </div>
 
 <script>
-  let currentPlayer = null;
+  let playerInstance = null;
 
   function loadGame() {
     const container = document.getElementById("playerContainer");
     container.innerHTML = "";
+
+    if (!window.RufflePlayer) {
+      alert("Ruffle failed to load. Check ruffle.js path.");
+      return;
+    }
 
     const ruffle = window.RufflePlayer.newest();
     const player = ruffle.createPlayer();
@@ -122,9 +127,10 @@
     container.appendChild(player);
 
     const gameUrl = document.getElementById("gameSelect").value;
+
     player.load(gameUrl);
 
-    currentPlayer = player;
+    playerInstance = player;
   }
 
   function toggleFullscreen() {
@@ -132,7 +138,7 @@
 
     if (!document.fullscreenElement) {
       container.requestFullscreen().catch(err => {
-        alert(`Fullscreen error: ${err.message}`);
+        console.error(err);
       });
     } else {
       document.exitFullscreen();
